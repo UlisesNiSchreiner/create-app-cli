@@ -22,6 +22,10 @@ module.exports = [
       parser: tsParser,
       ecmaVersion: 2022,
       sourceType: "module",
+      globals: {
+        console: "readonly",
+        process: "readonly",
+      },
     },
     plugins: {
       "@typescript-eslint": ts,

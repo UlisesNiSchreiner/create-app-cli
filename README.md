@@ -1,13 +1,22 @@
-# typescript-lib-template
+# create-app-cli
 
-A Template for building **TypeScript libraries** :  
-✔ ESM + CJS + type definitions  
-✔ Tests + Coverage (Vitest)  
-✔ CI/CD  
-✔ LibFlow (branching model for libraries)  
-✔ Manual versioning with standard-version  
-✔ Husky + lint-staged + commitlint  
-✔ npm publishing
+A Node.js CLI that scaffolds new applications from your GitHub template repositories, runs the template initializer, creates a brand new GitHub repository (user or org), pushes the initial commit, and leaves you with a ready-to-work local repo.
+
+This project is designed so you can later power a **web UI** (internal developer portal) using the same core logic.
+
+---
+
+## Features
+
+- ✅ Wizard mode (interactive prompts) and non-interactive flags
+- ✅ Downloads a template repo **without** `.git` history (fast, clean)
+- ✅ Runs template initialization commands (per template / technology)
+- ✅ Creates a new GitHub repository (user or organization)
+- ✅ Creates an initial commit and pushes to GitHub
+- ✅ Works great for your public templates (Node / React / TypeScript / Go)
+- 🧩 Extensible: add new templates or init strategies via a single config file
+
+---
 
 ![CI](https://img.shields.io/github/actions/workflow/status/UlisesNiSchreiner/typescript-lib-template/ci.yml?label=CI)
 ![npm version](https://img.shields.io/npm/v/uns-typescript-lib-template)
@@ -18,158 +27,212 @@ A Template for building **TypeScript libraries** :
 
 ---
 
-# 🚀 Installation
+## Requirements
+
+- Node.js **18+**
+- `git` installed and available on PATH
+- For GitHub repository creation:
+  - Option A: a GitHub token in `GITHUB_TOKEN`
+  - Option B: GitHub CLI (`gh`) installed and already authenticated (`gh auth login`)
+
+> For Go templates, you also need `go` installed (for `go run ...`).
+
+---
+
+## Installation
+
+### Use via npx (recommended)
 
 ```bash
-npm i uns-typescript-lib-template
+npx @ulises/create-app
 ```
 
----
-
-# 📦 Usage
-
-```ts
-import { sum } from "uns-typescript-lib-template";
-
-console.log(sum(2, 3)); // -> 5
-```
-
----
-
-# 🧱 Project Structure
-
-```
-.
-├── src/                 # Source code (TS)
-├── test/                # Tests (Vitest)
-├── dist/                # Final build (ESM, CJS, .d.ts)
-├── .husky/              # Git hooks (lint + commitlint)
-├── .github/workflows/   # CI/CD
-└── README.md
-```
-
----
-
-# 🧩 Initializing a New Project from This Template
-
-When creating a new repository from this template, the default library name is:
-
-```
-uns_typescript-lib-template
-```
-
-You can automatically rename it by running:
+### Install globally
 
 ```bash
-npm run init-template <your-library-name>
+npm i -g @ulises/create-app
+ulises-create-app --help
 ```
+
+---
+
+## Quick start
+
+### Interactive wizard
+
+```bash
+npx @ulises/create-app
+```
+
+### Non-interactive (flags)
+
+```bash
+npx @ulises/create-app \
+  --template go-api-rest-template \
+  --name payments-api \
+  --owner UlisesNiSchreiner \
+  --visibility public \
+  --out ./payments-api
+```
+
+If you want to create the repo inside an organization:
+
+```bash
+npx @ulises/create-app \
+  --template node-api-rest-template \
+  --name billing-api \
+  --owner my-org \
+  --org \
+  --visibility private
+```
+
+---
+
+## Supported templates (default)
+
+These are pre-configured to match your public repos:
+
+- `go-api-rest-template`
+- `node-api-rest-template`
+- `react-ts-web-app-template`
+- `config-manager-js`
+- `react-next-ts-web-app-template`
+- `typescript-lib-template`
+- `template_gn_middleend`
+- `template_gn_web_cli`
+- `template_gn_rn_cli`
+
+> You can add/remove templates easily: see **Adding templates** below.
+
+---
+
+## What the CLI does
+
+1. Prompts for (or reads flags):
+   - template
+   - app name
+   - owner (user/org)
+   - repo visibility
+   - output directory
+2. Downloads the template into the output directory (using `degit`)
+3. Runs the template initializer (per template)
+4. Initializes a new git repo locally, commits the generated code
+5. Creates a new GitHub repository via API
+6. Adds `origin`, pushes `main`
+
+---
+
+## Authentication
+
+This CLI tries to authenticate with GitHub like this:
+
+1. If `GITHUB_TOKEN` is set, it uses it.
+2. Else, if `gh` is installed, it runs:
+   - `gh auth token`
+     and uses that token.
+
+### Recommended scopes
+
+If you will create private repos or repos in orgs, ensure your token has at least:
+
+- `repo`
+- `read:org` (often required for org operations)
+
+If you only create public repos under your user account, a smaller scope might be enough — but `repo` is the safest general default.
+
+---
+
+## Commands
+
+### `create` (default)
+
+```bash
+ulises-create-app create [options]
+```
+
+Options:
+
+- `--template <name>`: template key (one of the configured templates)
+- `--name <appName>`: new application name (and GitHub repo name)
+- `--owner <owner>`: GitHub username or org name
+- `--org`: treat `--owner` as an organization (creates under org)
+- `--visibility <public|private>`: repo visibility
+- `--out <path>`: output directory (default: `./<appName>`)
+- `--skip-github`: only scaffold locally, do not create remote repo
+- `--skip-init`: do not run the init-template script
+- `--yes`: skip confirmation prompts
+
+---
+
+## Adding templates
+
+Edit `src/templates.ts`.
+
+Each template has:
+
+- `key`: the CLI identifier
+- `repo`: GitHub `owner/repo`
+- `tech`: used to select an init strategy
+- `initializer`: optional override
 
 Example:
 
-```bash
-npm run init-template my-awesome-lib
+```ts
+{
+  key: "kotlin-api-template",
+  repo: "UlisesNiSchreiner/kotlin-api-template",
+  tech: "kotlin",
+}
 ```
 
-This will:
-
-- Update `package.json` with the new package name
-- Update README installation/import examples
-- Update npm version/download badges
+Then implement the initializer in `src/core/init.ts` (or add a new one).
 
 ---
 
-# 🔀 LibFlow — Workflow for Libraries
+## How template initialization works
 
-This project uses **LibFlow**, a GitFlow variant optimized specifically for library development.
+The CLI chooses an initializer based on `tech`:
 
-### 🌿 Main Branches
-
-- **master** → stable / production branch
-- **feature/\*** → new features and fixes
-- **release/x.y** → release preparation + RC
-- **hotfix/\*** → urgent patches on `master`
-
-### 🔄 Full Flow
-
-1. Create a feature branch:
-   ```bash
-   git checkout -b feature/my-feature
-   ```
-2. Open PR → merge into `master`
-3. Start a release:
-   ```bash
-   git checkout -b release/1.2
-   ```
-4. Publish RC:
-   ```bash
-   npm run release:rc
-   ```
-5. Validate RC
-6. Merge release → master
-7. Publish stable version:
-   ```bash
-   npm run release:patch   # or :minor / :major
-   ```
+- `node` / `react` / `typescript`:
+  - runs `npm install`
+  - then `npm run init-template <appName>`
+- `go`:
+  - runs `go run scripts/init-template.go github.com/<owner>/<repo>`
+- `kotlin` / `java`:
+  - not implemented yet (throws a clear error)
 
 ---
 
-# 🏷 Versioning & Releases
-
-Powered by **standard-version**.
-
-| Action            | Script                        |
-| ----------------- | ----------------------------- |
-| Patch release     | `npm run release:patch`       |
-| Minor release     | `npm run release:minor`       |
-| Major release     | `npm run release:major`       |
-| Release candidate | `npm run release:rc`          |
-| Finalize RC patch | `npm run release:final:patch` |
-| Finalize RC minor | `npm run release:final:minor` |
-| Finalize RC major | `npm run release:final:major` |
-
-Each command updates:
-
-- `CHANGELOG.md`
-- package version
-- Git tag
-- npm publish (requires `NPM_TOKEN`)
-
----
-
-# 🧪 Main Scripts
-
-| Script                  | Description                    |
-| ----------------------- | ------------------------------ |
-| `npm run dev`           | Watch build (tsup)             |
-| `npm run build`         | Compile ESM + CJS + types      |
-| `npm run test`          | Run tests                      |
-| `npm run test:coverage` | Coverage with V8               |
-| `npm run typecheck`     | TS check without emitting      |
-| `npm run docs`          | Generate Typedoc documentation |
-
----
-
-# 🛠 First-Time Setup
+## Local development
 
 ```bash
-npm ci
+npm install
+npm run dev -- create
+```
+
+Build:
+
+```bash
 npm run build
-npm run test
-
-git add .
-git commit -m "feat: initial setup"
 ```
 
 ---
 
-# 📘 API
+## Roadmap (suggested)
 
-### **`sum(a: number, b: number): number`**
-
-Adds two numbers and validates they are finite.
+- [ ] Add Kotlin/Java init strategy (Gradle tasks or custom scripts)
+- [ ] Add “catalog” JSON hosted remotely (so templates can be updated without publishing)
+- [ ] Add DigitalOcean provisioning (Terraform):
+  - VPC, LB, domains, SSL, scopes
+  - environment config and secrets
+- [ ] Extract a server API (for a future web UI):
+  - `POST /apps` -> creates app from template and provisions infra
+- [ ] Web UI / Portal for devs:
+  - login via GitHub OAuth
+  - wizard + progress view
 
 ---
 
-# 📄 License
+## License
 
-MIT © Ulises Schreiner
+MIT
