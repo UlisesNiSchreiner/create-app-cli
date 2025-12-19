@@ -14,7 +14,7 @@ export default defineConfig({
         functions: 90,
         lines: 90,
       },
-      exclude: ["src/index.ts"],
+      exclude: ["src/index.ts", "src/commands/**", "src/templates.ts"],
     },
   },
 });

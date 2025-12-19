@@ -36,7 +36,7 @@ describe("createGithubRepo", () => {
     delete process.env.GITHUB_TOKEN;
   });
 
-  it("uses GITHUB_TOKEN when present", async () => {
+  it("test createGithubRepo when env token exists then uses provided token", async () => {
     process.env.GITHUB_TOKEN = "env-token";
 
     const repo = await createGithubRepo({
@@ -53,7 +53,7 @@ describe("createGithubRepo", () => {
     expect(execa).not.toHaveBeenCalled();
   });
 
-  it("falls back to gh auth token when env is missing", async () => {
+  it("test createGithubRepo when env token missing then falls back to gh auth token", async () => {
     const repo = await createGithubRepo({
       owner: "UlisesNiSchreiner",
       name: "my-app",
@@ -66,7 +66,7 @@ describe("createGithubRepo", () => {
     expect(repo.htmlUrl).toBe("https://github.com/u/x");
   });
 
-  it("creates in org when isOrg is true", async () => {
+  it("test createGithubRepo when org flag true then creates org repository", async () => {
     const repo = await createGithubRepo({
       owner: "my-org",
       name: "org-app",

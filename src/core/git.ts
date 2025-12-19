@@ -8,12 +8,6 @@ export async function initGitAndCommit(repoPath: string, message: string) {
   await git.branch(["-M", "main"]);
 }
 
-/*export async function addRemoteAndPush(repoPath: string, remoteUrl: string) {
-  const git = simpleGit(repoPath);
-  await git.addRemote("origin", remoteUrl);
-  await git.push(["-u", "origin", "main"]);
-}*/
-
 /**
  * Injects the token into an HTTPS GitHub URL for a single push.
  * The token is NOT persisted.

@@ -11,7 +11,7 @@ async function mkTmpDir(prefix: string) {
 }
 
 describe("ensureEmptyDir", () => {
-  it("creates the directory if it does not exist", async () => {
+  it("test ensureEmptyDir when target missing then creates directory", async () => {
     const parent = await mkTmpDir("ulises-cli-parent-");
     const target = path.join(parent, "new-app");
     await ensureEmptyDir(target);
@@ -20,14 +20,14 @@ describe("ensureEmptyDir", () => {
     expect(stat.isDirectory()).toBe(true);
   });
 
-  it("throws if directory exists and is not empty", async () => {
+  it("test ensureEmptyDir when dir non empty then throws error", async () => {
     const dir = await mkTmpDir("ulises-cli-nonempty-");
     await fs.writeFile(path.join(dir, "file.txt"), "x", "utf-8");
 
     await expect(ensureEmptyDir(dir)).rejects.toThrow(/not empty/i);
   });
 
-  it("throws if output path exists and is not a directory", async () => {
+  it("test ensureEmptyDir when path is file then throws not directory error", async () => {
     const parent = await mkTmpDir("ulises-cli-fileparent-");
     const filePath = path.join(parent, "out");
     await fs.writeFile(filePath, "hello", "utf-8");

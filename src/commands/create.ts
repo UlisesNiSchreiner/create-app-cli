@@ -2,7 +2,7 @@ import path from "node:path";
 import { Command, type OptionValues } from "commander";
 import prompts, { type PromptObject } from "prompts";
 
-import { TEMPLATE_CATALOG, type TemplateKey } from "../templates.js";
+import { TEMPLATE_CATALOG, type TemplateDef, type TemplateKey } from "../templates.js";
 import { downloadTemplate } from "../core/template.js";
 import { runInitializer } from "../core/init.js";
 import { ensureEmptyDir } from "../core/fs.js";
@@ -16,6 +16,8 @@ type WizardAnswers = {
   isOrg?: boolean;
   visibility?: "public" | "private";
 };
+
+type WizardAnswerName = keyof WizardAnswers;
 
 type CreateCommandOptions = OptionValues & {
   template?: TemplateKey;
@@ -66,61 +68,64 @@ export const createCommand = new Command("create")
 
     let answers: WizardAnswers = {};
     if (needsWizard) {
-      const wizardQuestions = [
-        !initial.template
-          ? {
-              type: "select",
-              name: "template",
-              message: "Choose a template",
-              choices: catalogKeys.map((k) => ({
-                title: `${k} (${TEMPLATE_CATALOG[k].repo})`,
-                value: k,
-              })),
-            }
-          : null,
-        !initial.appName
-          ? {
-              type: "text",
-              name: "appName",
-              message: "Application name (and repo name)",
-              validate: (v: string) => (v?.trim().length ? true : "Required"),
-            }
-          : null,
-        initial.skipGithub || initial.owner
-          ? null
-          : {
-              type: "text",
-              name: "owner",
-              message: "GitHub owner (username or org)",
-              validate: (v: string) => (v?.trim().length ? true : "Required"),
-            },
-        initial.skipGithub
-          ? null
-          : {
-              type: "toggle",
-              name: "isOrg",
-              message: "Is this an organization?",
-              initial: initial.isOrg ? 1 : 0,
-              active: "yes",
-              inactive: "no",
-            },
-        {
-          type: "select",
-          name: "visibility",
-          message: "Repo visibility",
-          choices: [
-            { title: "public", value: "public" },
-            { title: "private", value: "private" },
-          ],
-          initial: initial.visibility === "private" ? 1 : 0,
-        },
-      ].filter((q): q is PromptObject<keyof WizardAnswers> => q !== null);
+      const wizardQuestions = (
+        [
+          !initial.template
+            ? {
+                type: "select",
+                name: "template",
+                message: "Choose a template",
+                choices: catalogKeys.map((k) => ({
+                  title: `${k} (${TEMPLATE_CATALOG[k].repo})`,
+                  value: k,
+                })),
+              }
+            : null,
+          !initial.appName
+            ? {
+                type: "text",
+                name: "appName",
+                message: "Application name (and repo name)",
+                validate: (v: string) => (v?.trim().length ? true : "Required"),
+              }
+            : null,
+          initial.skipGithub || initial.owner
+            ? null
+            : {
+                type: "text",
+                name: "owner",
+                message: "GitHub owner (username or org)",
+                validate: (v: string) => (v?.trim().length ? true : "Required"),
+              },
+          initial.skipGithub
+            ? null
+            : {
+                type: "toggle",
+                name: "isOrg",
+                message: "Is this an organization?",
+                initial: initial.isOrg ? 1 : 0,
+                active: "yes",
+                inactive: "no",
+              },
+          {
+            type: "select",
+            name: "visibility",
+            message: "Repo visibility",
+            choices: [
+              { title: "public", value: "public" },
+              { title: "private", value: "private" },
+            ],
+            initial: initial.visibility === "private" ? 1 : 0,
+          },
+        ] as Array<PromptObject<WizardAnswerName> | null>
+      ).filter((q): q is PromptObject<WizardAnswerName> => Boolean(q));
 
-      answers = await prompts<WizardAnswers>(wizardQuestions, {
+      const wizardResponse = await prompts<WizardAnswerName>(wizardQuestions, {
         onCancel: () => {
           process.exit(1);
         },
       });
+      answers = wizardResponse as WizardAnswers;
     }
 
     const templateKey = (initial.template ?? answers.template) as TemplateKey;
@@ -131,13 +136,13 @@ export const createCommand = new Command("create")
 
     const outDir = path.resolve(initial.outDir ?? `./${appName}`);
 
-    const template = TEMPLATE_CATALOG[templateKey];
+    const template: TemplateDef | undefined = TEMPLATE_CATALOG[templateKey];
     if (!template) {
       throw new Error(`Unknown template '${templateKey}'.`);
     }
 
     if (!initial.yes) {
-      const confirm = await prompts<{ ok: boolean }>({
+      const confirmQuestion: PromptObject<"ok"> = {
         type: "confirm",
         name: "ok",
         message:
@@ -147,6 +152,11 @@ export const createCommand = new Command("create")
             ? `\nGitHub: skipped\n`
             : `\nGitHub:\n  owner=${owner} (${isOrg ? "org" : "user"})\n  visibility=${finalVisibility}\n`),
         initial: true,
+      };
+      const confirm = await prompts<"ok">(confirmQuestion, {
+        onCancel: () => {
+          process.exit(1);
+        },
       });
       if (!confirm.ok) process.exit(1);
     }

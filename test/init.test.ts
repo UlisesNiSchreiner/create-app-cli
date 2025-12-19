@@ -13,7 +13,7 @@ describe("runInitializer", () => {
     vi.mocked(execa).mockClear?.();
   });
 
-  it("runs npm install + npm run init-template for node/react/typescript", async () => {
+  it("test runInitializer when tech is node like then runs npm scripts", async () => {
     const template: TemplateDef = {
       key: "node-api-rest-template",
       repo: "UlisesNiSchreiner/node-api-rest-template",
@@ -40,7 +40,7 @@ describe("runInitializer", () => {
     );
   });
 
-  it("runs go init-template script for go tech using module path github.com/<owner>/<appName>", async () => {
+  it("test runInitializer when tech is go then runs go init template with module path", async () => {
     const template: TemplateDef = {
       key: "go-api-rest-template",
       repo: "UlisesNiSchreiner/go-api-rest-template",
@@ -62,7 +62,7 @@ describe("runInitializer", () => {
     );
   });
 
-  it("throws for go tech if owner is missing", async () => {
+  it("test runInitializer when go owner missing then throws informative error", async () => {
     const template: TemplateDef = {
       key: "go-api-rest-template",
       repo: "UlisesNiSchreiner/go-api-rest-template",
@@ -78,7 +78,7 @@ describe("runInitializer", () => {
     ).rejects.toThrow(/require --owner/i);
   });
 
-  it("throws for kotlin/java until implemented", async () => {
+  it("test runInitializer when tech not implemented then throws error", async () => {
     const template: TemplateDef = {
       key: "kotlin-template",
       repo: "x/y",
