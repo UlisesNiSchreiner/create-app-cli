@@ -26,7 +26,7 @@ A Node.js CLI that scaffolds new applications from your GitHub template reposito
 
 ## Installation
 
-### Global install (recommended)
+### Global install
 
 ```bash
 npm i -g app-factory-cli
@@ -46,7 +46,7 @@ If you prefer not to install globally:
 npm i -D app-factory-cli
 ```
 
-Run via npm (no `npx`):
+Run via npm:
 
 ```bash
 npm exec -- app-factory --help
