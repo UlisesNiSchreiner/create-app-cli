@@ -2,28 +2,13 @@
 
 A Node.js CLI that scaffolds new applications from your GitHub template repositories, runs the template initializer, creates a brand new GitHub repository (user or org), pushes the initial commit, and leaves you with a ready-to-work local repo.
 
-This project is designed so you can later power a **web UI** (internal developer portal) using the same core logic.
-
 ---
 
-## Features
-
-- ✅ Wizard mode (interactive prompts) and non-interactive flags
-- ✅ Downloads a template repo **without** `.git` history (fast, clean)
-- ✅ Runs template initialization commands (per template / technology)
-- ✅ Creates a new GitHub repository (user or organization)
-- ✅ Creates an initial commit and pushes to GitHub
-- ✅ Works great for your public templates (Node / React / TypeScript / Go)
-- 🧩 Extensible: add new templates or init strategies via a single config file
-
----
-
-![CI](https://img.shields.io/github/actions/workflow/status/UlisesNiSchreiner/typescript-lib-template/ci.yml?label=CI)
-![npm version](https://img.shields.io/npm/v/uns-typescript-lib-template)
-![npm downloads](https://img.shields.io/npm/dm/uns-typescript-lib-template)
-[![Coverage](https://codecov.io/gh/UlisesNiSchreiner/typescript-lib-template/branch/master/graph/badge.svg)](https://codecov.io/gh/UlisesNiSchreiner/typescript-lib-template)
-![license](https://img.shields.io/badge/License-MIT-green)
-![typescript](https://img.shields.io/badge/TypeScript-5.x-blue)
+![CI](https://img.shields.io/github/actions/workflow/status/UlisesNiSchreiner/create-app-cli/ci.yml?label=CI)
+![npm version](https://img.shields.io/npm/v/@ulises/create-app)
+![npm downloads](https://img.shields.io/npm/dm/@ulises/create-app)
+![license](https://img.shields.io/github/license/UlisesNiSchreiner/create-app-cli)
+[![Coverage](https://codecov.io/gh/UlisesNiSchreiner/create-app-cli/branch/main/graph/badge.svg)](https://codecov.io/gh/UlisesNiSchreiner/create-app-cli)
 
 ---
 
@@ -41,17 +26,17 @@ This project is designed so you can later power a **web UI** (internal developer
 
 ## Installation
 
-### Use via npx (recommended)
+### Use via npm
 
 ```bash
-npx @ulises/create-app
+npx i create-app-cli
 ```
 
 ### Install globally
 
 ```bash
-npm i -g @ulises/create-app
-ulises-create-app --help
+npm i -g create-app-cli
+create-app-cli --help
 ```
 
 ---
@@ -61,13 +46,13 @@ ulises-create-app --help
 ### Interactive wizard
 
 ```bash
-npx @ulises/create-app
+npm create-app-cli
 ```
 
 ### Non-interactive (flags)
 
 ```bash
-npx @ulises/create-app \
+npm create-app-cli \
   --template go-api-rest-template \
   --name payments-api \
   --owner UlisesNiSchreiner \
@@ -78,7 +63,7 @@ npx @ulises/create-app \
 If you want to create the repo inside an organization:
 
 ```bash
-npx @ulises/create-app \
+npm create-app-cli \
   --template node-api-rest-template \
   --name billing-api \
   --owner my-org \
@@ -147,7 +132,7 @@ If you only create public repos under your user account, a smaller scope might b
 ### `create` (default)
 
 ```bash
-ulises-create-app create [options]
+create-app-cli create [options]
 ```
 
 Options:
@@ -215,21 +200,6 @@ Build:
 ```bash
 npm run build
 ```
-
----
-
-## Roadmap (suggested)
-
-- [ ] Add Kotlin/Java init strategy (Gradle tasks or custom scripts)
-- [ ] Add “catalog” JSON hosted remotely (so templates can be updated without publishing)
-- [ ] Add DigitalOcean provisioning (Terraform):
-  - VPC, LB, domains, SSL, scopes
-  - environment config and secrets
-- [ ] Extract a server API (for a future web UI):
-  - `POST /apps` -> creates app from template and provisions infra
-- [ ] Web UI / Portal for devs:
-  - login via GitHub OAuth
-  - wizard + progress view
 
 ---
 
