@@ -1,12 +1,12 @@
-# create-app-cli
+# app-factory-cli
 
-A Node.js CLI that scaffolds new applications from your GitHub template repositories, runs the template initializer, creates a brand new GitHub repository (user or org), pushes the initial commit, and leaves you with a ready-to-work local repo.
+A Node.js CLI that scaffolds new applications from your GitHub template repositories, runs each template’s initializer, creates a brand new GitHub repository (user or org), pushes the initial commit, and leaves you with a ready-to-work local repo.
 
 ---
 
 ![CI](https://img.shields.io/github/actions/workflow/status/UlisesNiSchreiner/create-app-cli/ci.yml?label=CI)
-![npm version](https://img.shields.io/npm/v/@ulises/create-app)
-![npm downloads](https://img.shields.io/npm/dm/@ulises/create-app)
+![npm version](https://img.shields.io/npm/v/app-factory-cli)
+![npm downloads](https://img.shields.io/npm/dm/app-factory-cli)
 ![license](https://img.shields.io/github/license/UlisesNiSchreiner/create-app-cli)
 [![Coverage](https://codecov.io/gh/UlisesNiSchreiner/create-app-cli/branch/main/graph/badge.svg)](https://codecov.io/gh/UlisesNiSchreiner/create-app-cli)
 
@@ -26,17 +26,30 @@ A Node.js CLI that scaffolds new applications from your GitHub template reposito
 
 ## Installation
 
-### Use via npm
+### Global install (recommended)
 
 ```bash
-npm i create-app-cli
+npm i -g app-factory-cli
 ```
 
-### Install globally
+Verify:
 
 ```bash
-npm i -g create-app-cli
-create-app-cli --help
+app-factory --help
+```
+
+### Project-local install (works with npm only)
+
+If you prefer not to install globally:
+
+```bash
+npm i -D app-factory-cli
+```
+
+Run via npm (no `npx`):
+
+```bash
+npm exec -- app-factory --help
 ```
 
 ---
@@ -45,14 +58,22 @@ create-app-cli --help
 
 ### Interactive wizard
 
+Global:
+
 ```bash
-npm create-app-cli
+app-factory create
+```
+
+Local (npm only):
+
+```bash
+npm exec -- app-factory create
 ```
 
 ### Non-interactive (flags)
 
 ```bash
-npm create-app-cli \
+app-factory create \
   --template go-api-rest-template \
   --name payments-api \
   --owner UlisesNiSchreiner \
@@ -63,7 +84,7 @@ npm create-app-cli \
 If you want to create the repo inside an organization:
 
 ```bash
-npm create-app-cli \
+app-factory create \
   --template node-api-rest-template \
   --name billing-api \
   --owner my-org \
@@ -112,18 +133,22 @@ These are pre-configured to match your public repos:
 This CLI tries to authenticate with GitHub like this:
 
 1. If `GITHUB_TOKEN` is set, it uses it.
-2. Else, if `gh` is installed, it runs:
-   - `gh auth token`
-     and uses that token.
+2. Else, if `gh` is installed, it runs `gh auth token` and uses that token.
 
-### Recommended scopes
+### Recommended token permissions
 
-If you will create private repos or repos in orgs, ensure your token has at least:
+**Classic PAT (ghp\_\*)**
 
 - `repo`
 - `read:org` (often required for org operations)
 
-If you only create public repos under your user account, a smaller scope might be enough — but `repo` is the safest general default.
+**Fine-grained PAT (github*pat*\*)**
+
+- Repository permissions:
+  - **Administration: Read and write** (create repo)
+  - **Contents: Read and write** (push)
+
+> If you create repos in orgs, ensure the token is allowed for that org (and SSO if applicable).
 
 ---
 
@@ -132,7 +157,7 @@ If you only create public repos under your user account, a smaller scope might b
 ### `create` (default)
 
 ```bash
-create-app-cli create [options]
+app-factory create [options]
 ```
 
 Options:
@@ -142,7 +167,7 @@ Options:
 - `--owner <owner>`: GitHub username or org name
 - `--org`: treat `--owner` as an organization (creates under org)
 - `--visibility <public|private>`: repo visibility
-- `--out <path>`: output directory (default: `./<appName>`)
+- `--out <path>`: output directory (default: `./<appName>` relative to where you run the command)
 - `--skip-github`: only scaffold locally, do not create remote repo
 - `--skip-init`: do not run the init-template script
 - `--yes`: skip confirmation prompts
