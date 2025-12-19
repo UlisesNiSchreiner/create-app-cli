@@ -1,5 +1,5 @@
 {
-  "name": "create-app-cli",
+  "name": "app-factory-cli",
   "version": "1.0.0",
   "description": "A template to create Typescript Libraries",
   "author": "Ulises Schreiner",
