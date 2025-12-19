@@ -1,25 +1,29 @@
 {
   "name": "app-factory-cli",
-  "version": "1.0.0",
-  "description": "A template to create Typescript Libraries",
+  "version": "1.0.1",
+  "description": "CLI to generate applications from templates",
   "author": "Ulises Schreiner",
   "license": "MIT",
   "type": "module",
-  "main": "dist/index.cjs",
+  "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
+  "bin": {
+    "app-factory": "dist/index.js"
   },
   "files": [
     "dist"
   ],
   "engines": {
     "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UlisesNiSchreiner/create-app-cli.git"
+  },
+  "homepage": "https://github.com/UlisesNiSchreiner/create-app-cli#readme",
+  "bugs": {
+    "url": "https://github.com/UlisesNiSchreiner/create-app-cli/issues"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts",
