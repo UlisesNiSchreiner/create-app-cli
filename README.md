@@ -29,7 +29,7 @@ A Node.js CLI that scaffolds new applications from your GitHub template reposito
 ### Use via npm
 
 ```bash
-npx i create-app-cli
+npm i create-app-cli
 ```
 
 ### Install globally
