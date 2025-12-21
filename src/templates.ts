@@ -27,12 +27,6 @@ export const TEMPLATE_CATALOG = {
     tech: "react",
     description: "React + TypeScript web app template.",
   },
-  "config-manager-js": {
-    key: "config-manager-js",
-    repo: "UlisesNiSchreiner/config-manager-js",
-    tech: "node",
-    description: "Config manager JS template / starter.",
-  },
   "react-next-ts-web-app-template": {
     key: "react-next-ts-web-app-template",
     repo: "UlisesNiSchreiner/react-next-ts-web-app-template",
